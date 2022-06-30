@@ -4,6 +4,7 @@ import com.itrex.muklerplus.scheduler.job.IntegrationTelegramGetChatHistoryJob;
 import com.itrex.muklerplus.scheduler.job.PrimaryCollectorResendJob;
 import org.quartz.JobDetail;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
@@ -12,6 +13,12 @@ import org.springframework.web.client.RestTemplate;
 
 @Configuration
 public class SchedulerConfig {
+
+  @Value("${primary-collector.scheduler.resend.cron.expression}")
+  private String primaryCollectorResendCronExpression;
+
+  @Value("${integration-telegram.scheduler.get-chats.cron.expression}")
+  private String integrationTelegramSchedulerGetChatsCronExpression;
 
   @Bean(name = "primaryCollectorResendJobDetail")
   public JobDetailFactoryBean primaryCollectorResendJobDetail() {
@@ -26,7 +33,7 @@ public class SchedulerConfig {
       @Qualifier("primaryCollectorResendJobDetail") JobDetail job) {
     CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
     trigger.setJobDetail(job);
-    trigger.setCronExpression("0 0/1 * * * ? *");
+    trigger.setCronExpression(primaryCollectorResendCronExpression);
     return trigger;
   }
 
@@ -43,7 +50,7 @@ public class SchedulerConfig {
       @Qualifier("integrationTelegramGetChatHistoryJobDetail") JobDetail job) {
     CronTriggerFactoryBean trigger = new CronTriggerFactoryBean();
     trigger.setJobDetail(job);
-    trigger.setCronExpression("0 0/2 * * * ? *");
+    trigger.setCronExpression(integrationTelegramSchedulerGetChatsCronExpression);
     return trigger;
   }
 
